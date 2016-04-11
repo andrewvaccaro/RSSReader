@@ -1,5 +1,8 @@
 package vaccaro.andrew.rssreader;
 
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -13,6 +16,8 @@ import android.widget.TextView;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.squareup.picasso.Picasso;
+
 import java.io.InputStream;
 import java.util.List;
 import java.util.ArrayList;
@@ -20,11 +25,12 @@ import java.util.ArrayList;
 
 public class RSSAdapter extends RecyclerView.Adapter<RSSAdapter.ViewHolder> {
     private List<RSSEntry> rssEntries;
+    private Context context;
 
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
     // you provide access to all the views for a data item in a view holder
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         // each data item is just a string in this case
         public TextView urlTextView;
         public ImageView photoImageView;
@@ -34,13 +40,21 @@ public class RSSAdapter extends RecyclerView.Adapter<RSSAdapter.ViewHolder> {
             urlTextView = (TextView)itemView.findViewById(R.id.urlTextView);
             headlineTextView = (TextView)itemView.findViewById(R.id.headlineTextView);
             photoImageView = (ImageView)itemView.findViewById(R.id.photoUrlImageView);
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+
         }
     }
 
     // Provide a suitable constructor (depends on the kind of dataset)
-    public RSSAdapter(List<RSSEntry> mRssEntries) {
+    public RSSAdapter(List<RSSEntry> mRssEntries, Context context) {
         this.rssEntries = mRssEntries;
+        this.context = context;
     }
+
 
     // Create new views (invoked by the layout manager)
     @Override
@@ -57,9 +71,10 @@ public class RSSAdapter extends RecyclerView.Adapter<RSSAdapter.ViewHolder> {
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
         holder.headlineTextView.setText(rssEntries.get(pos).getHeadline());
-//        holder.photoImageView.setImageURI(Uri.parse(rssEntries.get(pos).getPhotoURL()));
-        new DownloadImage(holder.photoImageView).execute(rssEntries.get(pos).getPhotoURL());
+        Picasso.with(context).load(rssEntries.get(pos).getPhotoURL()).fit().centerCrop().into(holder.photoImageView);
         holder.urlTextView.setText(rssEntries.get(pos).getUrl());
+
+
     }
 
     // Return the size of your dataset (invoked by the layout manager)
@@ -68,31 +83,6 @@ public class RSSAdapter extends RecyclerView.Adapter<RSSAdapter.ViewHolder> {
         return rssEntries.size();
     }
 
-    private class DownloadImage extends AsyncTask<String, Void, Bitmap> {
-        ImageView imageView;
-
-        public DownloadImage(ImageView imageView) {
-            this.imageView = imageView;
-        }
-
-        protected Bitmap doInBackground(String... urls) {
-            String imageURL = urls[0];
-            Bitmap bimage = null;
-            try {
-                InputStream in = new java.net.URL(imageURL).openStream();
-                bimage = BitmapFactory.decodeStream(in);
-
-            } catch (Exception e) {
-                Log.e("Error Message", e.getMessage());
-                e.printStackTrace();
-            }
-            return bimage;
-        }
-
-        protected void onPostExecute(Bitmap result) {
-            imageView.setImageBitmap(result);
-        }
-    }
 }
 
 
