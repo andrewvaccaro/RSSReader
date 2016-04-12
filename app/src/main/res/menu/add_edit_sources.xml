@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/addSource"
+        android:title="@string/menu_item_add_source"
+        android:icon="@android:drawable/ic_menu_add"
+        android:titleCondensed="@string/menu_item_add_source"
+        android:alphabeticShortcut="e">
+    </item>
+    <item android:id="@+id/editSource"
+        android:title="@string/menu_item_edit_sources"
+        android:icon="@android:drawable/ic_menu_edit"
+        android:titleCondensed="@string/menu_item_edit_source"
+        android:alphabeticShortcut="e">
+    </item>
+</menu>

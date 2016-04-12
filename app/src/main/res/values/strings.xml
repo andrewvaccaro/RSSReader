@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">RSSReader</string>
+    <string name="menu_item_edit_sources">Edit Sources</string>
+    <string name="menu_item_add_source">Add Source</string>
+    <string name="menu_item_edit_source">Edit Source</string>
+    <string name="source_hint">enter source url</string>
 </resources>
