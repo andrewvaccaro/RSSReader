@@ -23,6 +23,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class edit_sources extends AppCompatActivity {
     private CursorAdapter rssAdapter;
@@ -60,13 +61,20 @@ public class edit_sources extends AppCompatActivity {
             inputAlert.setTitle("Add Source URL");
             inputAlert.setMessage("Enter the RSS feed URL");
             final EditText urlInput = new EditText(this);
+            urlInput.setHint("Paste URL here");
             inputAlert.setView(urlInput);
             inputAlert.setPositiveButton("Add", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     String url = urlInput.getText().toString();
-                    saveRSSUrl(url);
-                    onResume();
+                    if(url.length() < 5) {
+                        Toast.makeText(edit_sources.this, "URL is too short", Toast.LENGTH_LONG).show();
+                    } else if(!url.contains("rss")){
+                        Toast.makeText(edit_sources.this, "URL must be a valid RSS feed", Toast.LENGTH_LONG).show();
+                    } else {
+                        saveRSSUrl(url);
+                        onResume();
+                    }
                 }
             });
             inputAlert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {

@@ -7,6 +7,10 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
+import android.util.Log;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class DatabaseConnection
 {
@@ -46,6 +50,21 @@ public class DatabaseConnection
     public Cursor getAllRSSFeeds()
     {
         return database.query("RSSFeeds", new String[] {"_id", "url"}, null, null, null, null, "url");
+    }
+
+    public ArrayList<String> selectAllRSSFeeds(){
+        String query = "select url from RSSFeeds";
+
+        Cursor cursor = database.rawQuery(query,null);
+
+        ArrayList<String> urlList = new ArrayList<String>();
+        if (cursor.moveToFirst()) {
+            do {
+                urlList.add(cursor.getString(0));
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return urlList;
     }
 
     public Cursor getRSSFeed(long id)
