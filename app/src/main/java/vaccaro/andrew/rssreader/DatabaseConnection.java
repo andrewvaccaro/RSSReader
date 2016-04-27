@@ -53,14 +53,14 @@ public class DatabaseConnection
     }
 
     public ArrayList<String> selectAllRSSFeeds(){
-        String query = "select url from RSSFeeds";
-
+        String query = "select * from RSSFeeds";
+        database = databaseOpenHelper.getWritableDatabase();
         Cursor cursor = database.rawQuery(query,null);
 
-        ArrayList<String> urlList = new ArrayList<String>();
+        ArrayList<String> urlList = new ArrayList<>();
         if (cursor.moveToFirst()) {
             do {
-                urlList.add(cursor.getString(0));
+                urlList.add(cursor.getString(1));
             } while (cursor.moveToNext());
         }
         cursor.close();
