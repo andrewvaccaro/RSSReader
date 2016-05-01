@@ -1,5 +1,4 @@
 package vaccaro.andrew.rssreader;
-
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import java.util.List;
