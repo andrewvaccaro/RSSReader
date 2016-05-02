@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -37,39 +38,53 @@ public class rss_list extends AppCompatActivity {
     private RecyclerView.LayoutManager mLayoutManager;
     private ArrayList<RSSEntry> list = new ArrayList<>();
     private DatabaseConnection db;
+    private SwipeRefreshLayout srl;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rss_list);
+        srl = (SwipeRefreshLayout)findViewById(R.id.swipeRefreshLayout);
         db = new DatabaseConnection(rss_list.this);
-        ArrayList<String> urlList = db.selectAllRSSFeeds();
-        for(int i=0;i<urlList.size();i++){
-            new GetRssFeed().execute(urlList.get(i));
-        }
+        getRssItemsOnLoad();
 
-
-//        list.add(entryTest);
-//        list.add(entryTest);
-//        list.add(entryTest);
-//        list.add(entryTest);
-//        list.add(entryTest);
-//        list.add(entryTest3);
-//        list.add(entryTest3);
-//        list.add(entryTest3);
-//        list.add(entryTest3);
-//        list.add(entryTest3);
-//        list.add(entryTest3);
-//        list.add(entryTest3);
-//        list.add(entryTest2);
-//        list.add(entryTest2);
-//        list.add(entryTest2);
-//        list.add(entryTest2);
         mRecyclerView = (RecyclerView)findViewById(R.id.rssListRecView);
         mRecyclerView.setHasFixedSize(true);
         mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
         mAdapter = new RSSAdapter(list, this);
+
+        srl.setOnRefreshListener(
+                new SwipeRefreshLayout.OnRefreshListener() {
+                    @Override
+                    public void onRefresh() {
+                        list.clear();
+                        refreshItems();
+                    }
+                }
+        );
+    }
+
+    private void getRssItemsOnLoad(){
+        ArrayList<String> urlList = db.selectAllRSSFeeds();
+        if(urlList.size() > 0) {
+            for (int i = 0; i < urlList.size(); i++) {
+                try{
+                    new GetRssFeed().execute(urlList.get(i));
+                } catch (Exception e){
+                    break;
+                }
+            }
+        }
+    }
+
+    void refreshItems() {
+        getRssItemsOnLoad();
+        onItemsLoadComplete();
+    }
+
+    void onItemsLoadComplete() {
+        srl.setRefreshing(false);
     }
 
     @Override
@@ -116,6 +131,4 @@ public class rss_list extends AppCompatActivity {
             mRecyclerView.setAdapter(mAdapter);
         }
     }
-
-
 }

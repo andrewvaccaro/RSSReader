@@ -69,8 +69,6 @@ public class edit_sources extends AppCompatActivity {
                     String url = urlInput.getText().toString();
                     if(url.length() < 5) {
                         Toast.makeText(edit_sources.this, "URL is too short", Toast.LENGTH_LONG).show();
-                    } else if(!url.contains("rss")){
-                        Toast.makeText(edit_sources.this, "URL must be a valid RSS feed", Toast.LENGTH_LONG).show();
                     } else {
                         saveRSSUrl(url);
                         onResume();
