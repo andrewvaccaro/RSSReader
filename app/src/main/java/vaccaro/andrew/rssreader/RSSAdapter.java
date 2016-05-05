@@ -73,8 +73,14 @@ public class RSSAdapter extends RecyclerView.Adapter<RSSAdapter.ViewHolder> {
         holder.headlineTextView.setText(rssEntries.get(pos).getHeadline());
         Picasso.with(context).load(rssEntries.get(pos).getPhotoURL()).fit().centerCrop().into(holder.photoImageView);
         holder.urlTextView.setText(rssEntries.get(pos).getUrl());
-
-
+        final String url = rssEntries.get(pos).getUrl();
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                context.startActivity(browserIntent);
+            }
+        });
     }
 
     // Return the size of your dataset (invoked by the layout manager)

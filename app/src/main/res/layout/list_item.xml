@@ -28,6 +28,7 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
         android:layout_marginRight="8dp"
+        android:paddingLeft="12dp"
         />
 
 </RelativeLayout>

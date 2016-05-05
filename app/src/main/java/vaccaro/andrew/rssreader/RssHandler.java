@@ -31,6 +31,7 @@ public class RssHandler extends DefaultHandler {
     private boolean parsingTitle;
     private boolean parsingLink;
     private boolean parsingDescription;
+    StringBuilder stringArr = null;
 
     public RssHandler() {
         //Initializes a new ArrayList that will hold all the generated RSS items.
@@ -47,9 +48,10 @@ public class RssHandler extends DefaultHandler {
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
         if (qName.equals("item"))
             currentItem = new RssItem();
-        else if (qName.equals("title"))
+        else if (qName.equals("title")) {
             parsingTitle = true;
-        else if (qName.equals("link"))
+            stringArr = new StringBuilder();
+        } else if (qName.equals("link"))
             parsingLink = true;
         else if (qName.equals("description"))
             parsingDescription = true;
@@ -66,9 +68,10 @@ public class RssHandler extends DefaultHandler {
             //End of an item so add the currentItem to the list of items.
             rssItemList.add(currentItem);
             currentItem = null;
-        } else if (qName.equals("title"))
+        } else if (qName.equals("title")) {
             parsingTitle = false;
-        else if (qName.equals("link"))
+            String textValue = stringArr.toString();
+        } else if (qName.equals("link"))
             parsingLink = false;
         else if (qName.equals("description"))
             parsingDescription = false;
@@ -79,10 +82,11 @@ public class RssHandler extends DefaultHandler {
     public void characters(char[] ch, int start, int length) throws SAXException {
         if (currentItem != null) {
             //If parsingTitle is true, then that means we are inside a <title> tag so the text is the title of an item.
-            if (parsingTitle)
-                currentItem.setTitle(new String(ch, start, length));
+            if (parsingTitle) {
+                stringArr.append(ch, start, length);
+                currentItem.setTitle(new String(stringArr));
                 //If parsingLink is true, then that means we are inside a <link> tag so the text is the link of an item.
-            else if (parsingLink)
+            } else if (parsingLink)
                 currentItem.setLink(new String(ch, start, length));
                 //If parsingDescription is true, then that means we are inside a <description> tag so the text is the description of an item.
             else if (parsingDescription)
