@@ -1,8 +1,6 @@
 package vaccaro.andrew.rssreader;
 
 import android.content.Intent;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -13,23 +11,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.CursorAdapter;
-import android.widget.SimpleCursorAdapter;
 
 
-import org.xml.sax.SAXException;
-import org.xmlpull.v1.XmlPullParserException;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.zip.DataFormatException;
 
 public class rss_list extends AppCompatActivity {
 
@@ -101,7 +85,7 @@ public class rss_list extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item)
     {
         // create a new Intent to launch the AddEditContact Activity
-        Intent sourceList = new Intent(rss_list.this, edit_sources.class);
+        Intent sourceList = new Intent(rss_list.this, Source_List.class);
         startActivity(sourceList);
         return super.onOptionsItemSelected(item);
     }

@@ -1,31 +1,27 @@
 package vaccaro.andrew.rssreader;
 
-import android.app.ActionBar;
 import android.app.Dialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.Color;
 import android.os.AsyncTask;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.CursorAdapter;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
-import android.widget.TextView;
 import android.widget.Toast;
 
-public class edit_sources extends AppCompatActivity {
+public class Source_List extends AppCompatActivity {
     private CursorAdapter rssAdapter;
 
     @Override
@@ -33,14 +29,23 @@ public class edit_sources extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_sources);
 
-
         ListView rssListView = (ListView) findViewById(R.id.listViewRssFeed);; // get the ListView
 
-        String[] from = new String[] { "url" };
-        int[] to = new int[] { R.id.rssFeedTextView };
-        rssAdapter = new SimpleCursorAdapter(edit_sources.this, R.layout.rssfeed_listview_item, null, from, to, 0);
+        String[] from = new String[] { "name", "url" };
+        int[] to = new int[] { R.id.rssFeedName, R.id.rssFeedUrl };
+        rssAdapter = new SimpleCursorAdapter(Source_List.this, R.layout.rssfeed_listview_item, null, from, to, 0);
         rssListView.setAdapter(rssAdapter);
 
+        rssListView.setOnItemClickListener(new AdapterView.OnItemClickListener()
+        {
+            @Override
+            public void onItemClick(AdapterView<?> adapter, View v, int position, long arg3)
+            {
+                Cursor cursor = (Cursor)adapter.getItemAtPosition(position);
+                int count = cursor.getInt(cursor.getColumnIndex("_id"));
+                
+            }
+        });
     }
 
     @Override
@@ -57,31 +62,31 @@ public class edit_sources extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item)
     {
         if(item.getItemId()==R.id.addSource){
-            final AlertDialog.Builder inputAlert = new AlertDialog.Builder(this);
-            inputAlert.setTitle("Add Source URL");
-            inputAlert.setMessage("Enter the RSS feed URL");
-            final EditText urlInput = new EditText(this);
-            urlInput.setHint("Paste URL here");
-            inputAlert.setView(urlInput);
-            inputAlert.setPositiveButton("Add", new DialogInterface.OnClickListener() {
+            final AlertDialog.Builder addSourcesDialog = new AlertDialog.Builder(this);
+            addSourcesDialog.setView(R.layout.add_source_dialog);
+            addSourcesDialog.setPositiveButton("Add", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    String url = urlInput.getText().toString();
-                    if(url.length() < 5) {
-                        Toast.makeText(edit_sources.this, "URL is too short", Toast.LENGTH_LONG).show();
+                    Dialog thisDialog = (Dialog)dialog;
+                    EditText rssDialogUrl = (EditText)thisDialog.findViewById(R.id.addRssFeedUrl);
+                    String rssDialogUrlText = rssDialogUrl.getText().toString();
+                    EditText rssDialogName = (EditText)thisDialog.findViewById(R.id.addRssTitle);
+                    String rssDialogNameUrlText = rssDialogName.getText().toString();
+                    if(rssDialogUrlText.length() < 5) {
+                        Toast.makeText(Source_List.this, "URL is too short", Toast.LENGTH_LONG).show();
                     } else {
-                        saveRSSUrl(url);
+                        saveRSSUrl(rssDialogUrlText, rssDialogNameUrlText);
                         onResume();
                     }
                 }
             });
-            inputAlert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            addSourcesDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.dismiss();
                 }
             });
-            AlertDialog alertDialog = inputAlert.create();
+            AlertDialog alertDialog = addSourcesDialog.create();
             alertDialog.show();
         } else if(item.getItemId() == R.id.editSource){
             //do stuff
@@ -89,9 +94,8 @@ public class edit_sources extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+
     @Override
-//called each time an Activity returns to the foreground including when it is
-//first created
     protected void onResume()
     {
         super.onResume(); // call super's onResume method
@@ -99,33 +103,31 @@ public class edit_sources extends AppCompatActivity {
     } // end method onResume
 
     @Override
-    //called when activity is no longer visible to user
     protected void onStop()
     {
-        Cursor cursor = rssAdapter.getCursor(); // get current Cursor
+        Cursor cursor = rssAdapter.getCursor();
 
         if (cursor != null)
-            cursor.close(); // deactivate it
+            cursor.close();
 
-        rssAdapter.changeCursor(null); // adapted now has no Cursor
+        rssAdapter.changeCursor(null);
         super.onStop();
-    } // end method onStop
+    }
 
 
-    private void saveRSSUrl(String url)
+    private void saveRSSUrl(String url, String name)
     {
-        // get DatabaseConnector to interact with the SQLite database
         DatabaseConnection databaseConnector = new DatabaseConnection(this);
 
         if (getIntent().getExtras() == null)
         {
-            databaseConnector.insertUrl(url);
+            databaseConnector.insertUrl(url, name);
         }
-    } // end class saveContact
+    }
 
     private class GetRSSTask extends AsyncTask<Object, Object, Cursor>
     {
-        DatabaseConnection databaseConnector = new DatabaseConnection(edit_sources.this);
+        DatabaseConnection databaseConnector = new DatabaseConnection(Source_List.this);
 
         @Override
         protected Cursor doInBackground(Object... params)
@@ -137,7 +139,7 @@ public class edit_sources extends AppCompatActivity {
         @Override
         protected void onPostExecute(Cursor result)
         {
-            rssAdapter.changeCursor(result); // set the adapter's Cursor
+            rssAdapter.changeCursor(result);
             databaseConnector.close();
         }
     }

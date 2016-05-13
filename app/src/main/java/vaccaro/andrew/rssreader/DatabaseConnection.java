@@ -37,19 +37,19 @@ public class DatabaseConnection
     }
 
     // inserts a new contact in the database
-    public void insertUrl(String url)
+    public void insertUrl(String url, String name)
     {
-        ContentValues newUrl = new ContentValues();
-        newUrl.put("url", url);
-
-        open(); // open the database
-        database.insert("RSSFeeds", null, newUrl);
-        close(); // close the database
+        ContentValues newFeed = new ContentValues();
+        newFeed.put("url", url);
+        newFeed.put("name", name);
+        open();
+        database.insert("RSSFeeds", null, newFeed);
+        close();
     }
 
     public Cursor getAllRSSFeeds()
     {
-        return database.query("RSSFeeds", new String[] {"_id", "url"}, null, null, null, null, "url");
+        return database.query("RSSFeeds", new String[] {"_id", "url", "name"}, null, null, null, null, "name");
     }
 
     public ArrayList<String> selectAllRSSFeeds(){
@@ -95,8 +95,7 @@ public class DatabaseConnection
             // query to create a new table named contacts
             String createQuery = "CREATE TABLE RSSFeeds" +
                     "(_id integer primary key autoincrement," +
-                    "url TEXT);";
-
+                    "url TEXT, name TEXT);";
             db.execSQL(createQuery);
         } // end method onCreate
 
