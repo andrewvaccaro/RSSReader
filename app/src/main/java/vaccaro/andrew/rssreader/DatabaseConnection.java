@@ -67,7 +67,7 @@ public class DatabaseConnection
         return urlList;
     }
 
-    public Cursor getRSSFeed(long id)
+    public Cursor getRSSFeed(String id)
     {
         return database.query("RSSFeeds", null, "_id=" + id, null, null, null, null);
     }

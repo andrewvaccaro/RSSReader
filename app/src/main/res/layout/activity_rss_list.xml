@@ -7,7 +7,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="vaccaro.andrew.rssreader.rss_list">
+    tools:context=".RSS_Feed_List">
 
     <android.support.v4.widget.SwipeRefreshLayout
         android:id="@+id/swipeRefreshLayout"

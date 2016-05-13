@@ -21,6 +21,8 @@ import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Toast;
 
+import javax.xml.transform.Source;
+
 public class Source_List extends AppCompatActivity {
     private CursorAdapter rssAdapter;
 
@@ -42,8 +44,10 @@ public class Source_List extends AppCompatActivity {
             public void onItemClick(AdapterView<?> adapter, View v, int position, long arg3)
             {
                 Cursor cursor = (Cursor)adapter.getItemAtPosition(position);
-                int count = cursor.getInt(cursor.getColumnIndex("_id"));
-                
+                String id = cursor.getString(cursor.getColumnIndex("_id"));
+                Intent intent = new Intent(Source_List.this, RSS_Feed_List.class);
+                intent.putExtra("id", id);
+                startActivity(intent);
             }
         });
     }

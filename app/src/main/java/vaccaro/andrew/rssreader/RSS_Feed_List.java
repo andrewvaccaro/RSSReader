@@ -1,6 +1,7 @@
 package vaccaro.andrew.rssreader;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.AsyncTask;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -15,11 +16,13 @@ import android.view.MenuItem;
 
 import java.util.ArrayList;
 
-public class rss_list extends AppCompatActivity {
+public class RSS_Feed_List extends AppCompatActivity {
 
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
+    private String id;
+    private String url;
     private ArrayList<RSSEntry> list = new ArrayList<>();
     private DatabaseConnection db;
     private SwipeRefreshLayout srl;
@@ -28,10 +31,10 @@ public class rss_list extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rss_list);
+        Intent intent = getIntent();
+        id = intent.getStringExtra("id");
         srl = (SwipeRefreshLayout)findViewById(R.id.swipeRefreshLayout);
-        db = new DatabaseConnection(rss_list.this);
-        getRssItemsOnLoad();
-
+        getRssUrlOnLoad(id);
         mRecyclerView = (RecyclerView)findViewById(R.id.rssListRecView);
         mRecyclerView.setHasFixedSize(true);
         mLayoutManager = new LinearLayoutManager(this);
@@ -43,27 +46,30 @@ public class rss_list extends AppCompatActivity {
                     @Override
                     public void onRefresh() {
                         list.clear();
-                        refreshItems();
+                        refreshItems(url);
                     }
                 }
         );
     }
 
-    private void getRssItemsOnLoad(){
-        ArrayList<String> urlList = db.selectAllRSSFeeds();
-        if(urlList.size() > 0) {
-            for (int i = 0; i < urlList.size(); i++) {
-                try{
-                    new GetRssFeed().execute(urlList.get(i));
-                } catch (Exception e){
-                    break;
-                }
-            }
+    public void getRssUrlOnLoad(String id){
+        try{
+            new GetRSSTask().execute(id);
+        } catch (Exception e){
+            Log.d("Exception=>", e.getMessage());
         }
     }
 
-    void refreshItems() {
-        getRssItemsOnLoad();
+    private void getRssItemsOnLoad(String url){
+        try{
+            new GetRssFeed().execute(url);
+        } catch (Exception e){
+            Log.d("Exception=>", e.getMessage());
+        }
+    }
+
+    void refreshItems(String url) {
+        getRssItemsOnLoad(url);
         onItemsLoadComplete();
     }
 
@@ -85,7 +91,7 @@ public class rss_list extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item)
     {
         // create a new Intent to launch the AddEditContact Activity
-        Intent sourceList = new Intent(rss_list.this, Source_List.class);
+        Intent sourceList = new Intent(RSS_Feed_List.this, Source_List.class);
         startActivity(sourceList);
         return super.onOptionsItemSelected(item);
     }
@@ -113,6 +119,27 @@ public class rss_list extends AppCompatActivity {
             super.onPostExecute(aVoid);
             mAdapter.notifyDataSetChanged();
             mRecyclerView.setAdapter(mAdapter);
+        }
+    }
+
+    private class GetRSSTask extends AsyncTask<String, Object, Cursor>
+    {
+        DatabaseConnection databaseConnector = new DatabaseConnection(RSS_Feed_List.this);
+
+        @Override
+        protected Cursor doInBackground(String... params)
+        {
+            databaseConnector.open();
+            return databaseConnector.getRSSFeed(params[0]);
+        }
+
+        @Override
+        protected void onPostExecute(Cursor result)
+        {
+            result.moveToNext();
+            url = result.getString(result.getColumnIndex("url"));
+            getRssItemsOnLoad(url);
+            databaseConnector.close();
         }
     }
 }
