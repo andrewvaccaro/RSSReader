@@ -72,12 +72,12 @@ public class DatabaseConnection
         return database.query("RSSFeeds", null, "_id=" + id, null, null, null, null);
     }
 
-    public void deleteContact(long id)
+    public void deleteRSSFeed(int id)
     {
-        open(); // open the database
+        open();
         database.delete("RSSFeeds", "_id=" + id, null);
-        close(); // close the database
-    } // end method deleteContact
+        close();
+    }
 
     private class DatabaseOpenHelper extends SQLiteOpenHelper
     {

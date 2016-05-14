@@ -50,6 +50,33 @@ public class Source_List extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        rssListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> adapter, View v, int position, long arg3) {
+                Cursor cursor = (Cursor)adapter.getItemAtPosition(position);
+                final String itemId = cursor.getString(cursor.getColumnIndex("_id"));
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(Source_List.this);
+                builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        deleteRSSFeed(itemId);
+                        Toast.makeText(Source_List.this, "RSS Feed deleted.",Toast.LENGTH_SHORT).show();
+                        onResume();
+                    }
+                });
+                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        onResume();
+                    }
+                });
+                builder.setTitle("Delete Entry");
+                builder.setMessage("Are you sure you want to delete this feed?");
+                AlertDialog dialog = builder.create();
+                dialog.show();
+                return true;
+            }
+        });
     }
 
     @Override
@@ -63,8 +90,7 @@ public class Source_List extends AppCompatActivity {
 
     // handle choice from options menu
     @Override
-    public boolean onOptionsItemSelected(MenuItem item)
-    {
+    public boolean onOptionsItemSelected(MenuItem item) {
         if(item.getItemId()==R.id.addSource){
             final AlertDialog.Builder addSourcesDialog = new AlertDialog.Builder(this);
             addSourcesDialog.setView(R.layout.add_source_dialog);
@@ -76,12 +102,8 @@ public class Source_List extends AppCompatActivity {
                     String rssDialogUrlText = rssDialogUrl.getText().toString();
                     EditText rssDialogName = (EditText)thisDialog.findViewById(R.id.addRssTitle);
                     String rssDialogNameUrlText = rssDialogName.getText().toString();
-                    if(rssDialogUrlText.length() < 5) {
-                        Toast.makeText(Source_List.this, "URL is too short", Toast.LENGTH_LONG).show();
-                    } else {
-                        saveRSSUrl(rssDialogUrlText, rssDialogNameUrlText);
-                        onResume();
-                    }
+                    saveRSSUrl(rssDialogUrlText, rssDialogNameUrlText);
+                    onResume();
                 }
             });
             addSourcesDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -92,8 +114,6 @@ public class Source_List extends AppCompatActivity {
             });
             AlertDialog alertDialog = addSourcesDialog.create();
             alertDialog.show();
-        } else if(item.getItemId() == R.id.editSource){
-            //do stuff
         }
         return super.onOptionsItemSelected(item);
     }
@@ -126,6 +146,16 @@ public class Source_List extends AppCompatActivity {
         if (getIntent().getExtras() == null)
         {
             databaseConnector.insertUrl(url, name);
+        }
+    }
+
+    private void deleteRSSFeed(String id)
+    {
+        DatabaseConnection databaseConnector = new DatabaseConnection(this);
+
+        if (getIntent().getExtras() == null)
+        {
+            databaseConnector.deleteRSSFeed(Integer.parseInt(id));
         }
     }
 

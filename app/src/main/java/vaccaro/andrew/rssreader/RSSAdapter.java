@@ -71,7 +71,10 @@ public class RSSAdapter extends RecyclerView.Adapter<RSSAdapter.ViewHolder> {
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
         holder.headlineTextView.setText(rssEntries.get(pos).getHeadline());
-        Picasso.with(context).load(rssEntries.get(pos).getPhotoURL()).fit().centerCrop().into(holder.photoImageView);
+        if(rssEntries.get(pos).getPhotoURL() == null)
+            Picasso.with(context).load(R.drawable.placeholder).fit().centerCrop().into(holder.photoImageView);
+        else
+            Picasso.with(context).load(rssEntries.get(pos).getPhotoURL()).fit().centerCrop().into(holder.photoImageView);
         holder.urlTextView.setText(rssEntries.get(pos).getUrl());
         final String url = rssEntries.get(pos).getUrl();
         holder.itemView.setOnClickListener(new View.OnClickListener() {

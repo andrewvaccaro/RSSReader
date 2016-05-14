@@ -1,8 +1,10 @@
 package vaccaro.andrew.rssreader;
 
+import android.app.ActionBar;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.AsyncTask;
+import android.support.v4.app.NavUtils;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -12,6 +14,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.Window;
 
 
 import java.util.ArrayList;
@@ -29,8 +32,11 @@ public class RSS_Feed_List extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        requestWindowFeature(Window.FEATURE_ACTION_BAR);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rss_list);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         Intent intent = getIntent();
         id = intent.getStringExtra("id");
         srl = (SwipeRefreshLayout)findViewById(R.id.swipeRefreshLayout);
@@ -50,6 +56,18 @@ public class RSS_Feed_List extends AppCompatActivity {
                     }
                 }
         );
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                Intent intent = new Intent(RSS_Feed_List.this, Source_List.class);
+                startActivity(intent);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+
     }
 
     public void getRssUrlOnLoad(String id){
@@ -77,24 +95,6 @@ public class RSS_Feed_List extends AppCompatActivity {
         srl.setRefreshing(false);
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu)
-    {
-        super.onCreateOptionsMenu(menu);
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.edit_sources, menu);
-        return true;
-    }
-
-    // handle choice from options menu
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item)
-    {
-        // create a new Intent to launch the AddEditContact Activity
-        Intent sourceList = new Intent(RSS_Feed_List.this, Source_List.class);
-        startActivity(sourceList);
-        return super.onOptionsItemSelected(item);
-    }
 
     private class GetRssFeed extends AsyncTask<String, Void, Void> {
         @Override
@@ -138,6 +138,8 @@ public class RSS_Feed_List extends AppCompatActivity {
         {
             result.moveToNext();
             url = result.getString(result.getColumnIndex("url"));
+            String name = result.getString(result.getColumnIndex("name"));
+            setTitle(name);
             getRssItemsOnLoad(url);
             databaseConnector.close();
         }

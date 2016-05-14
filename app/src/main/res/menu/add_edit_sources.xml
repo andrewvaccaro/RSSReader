@@ -6,10 +6,4 @@
         android:titleCondensed="@string/menu_item_add_source"
         android:alphabeticShortcut="e">
     </item>
-    <item android:id="@+id/editSource"
-        android:title="@string/menu_item_edit_sources"
-        android:icon="@android:drawable/ic_menu_edit"
-        android:titleCondensed="@string/menu_item_edit_source"
-        android:alphabeticShortcut="e">
-    </item>
 </menu>
