@@ -21,8 +21,6 @@ import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Toast;
 
-import javax.xml.transform.Source;
-
 public class Source_List extends AppCompatActivity {
     private CursorAdapter rssAdapter;
 
@@ -31,8 +29,7 @@ public class Source_List extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_sources);
 
-        ListView rssListView = (ListView) findViewById(R.id.listViewRssFeed);; // get the ListView
-
+        ListView rssListView = (ListView) findViewById(R.id.listViewRssFeed);
         String[] from = new String[] { "name", "url" };
         int[] to = new int[] { R.id.rssFeedName, R.id.rssFeedUrl };
         rssAdapter = new SimpleCursorAdapter(Source_List.this, R.layout.rssfeed_listview_item, null, from, to, 0);
@@ -142,21 +139,13 @@ public class Source_List extends AppCompatActivity {
     private void saveRSSUrl(String url, String name)
     {
         DatabaseConnection databaseConnector = new DatabaseConnection(this);
-
-        if (getIntent().getExtras() == null)
-        {
-            databaseConnector.insertUrl(url, name);
-        }
+        databaseConnector.insertUrl(url, name);
     }
 
     private void deleteRSSFeed(String id)
     {
         DatabaseConnection databaseConnector = new DatabaseConnection(this);
-
-        if (getIntent().getExtras() == null)
-        {
-            databaseConnector.deleteRSSFeed(Integer.parseInt(id));
-        }
+        databaseConnector.deleteRSSFeed(Integer.parseInt(id));
     }
 
     private class GetRSSTask extends AsyncTask<Object, Object, Cursor>

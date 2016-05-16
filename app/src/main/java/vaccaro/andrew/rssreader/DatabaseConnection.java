@@ -44,6 +44,7 @@ public class DatabaseConnection
         newFeed.put("name", name);
         open();
         database.insert("RSSFeeds", null, newFeed);
+        Log.d("insert Url => ", "here");
         close();
     }
 

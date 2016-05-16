@@ -27,17 +27,11 @@ public class RSSAdapter extends RecyclerView.Adapter<RSSAdapter.ViewHolder> {
     private List<RSSEntry> rssEntries;
     private Context context;
 
-    // Provide a reference to the views for each data item
-    // Complex data items may need more than one view per item, and
-    // you provide access to all the views for a data item in a view holder
     public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        // each data item is just a string in this case
-        public TextView urlTextView;
         public ImageView photoImageView;
         public TextView headlineTextView;
         public ViewHolder(View itemView) {
             super(itemView);
-            urlTextView = (TextView)itemView.findViewById(R.id.urlTextView);
             headlineTextView = (TextView)itemView.findViewById(R.id.headlineTextView);
             photoImageView = (ImageView)itemView.findViewById(R.id.photoUrlImageView);
             itemView.setOnClickListener(this);
@@ -68,14 +62,11 @@ public class RSSAdapter extends RecyclerView.Adapter<RSSAdapter.ViewHolder> {
     // Replace the contents of a view (invoked by the layout manager)
     @Override
     public void onBindViewHolder(ViewHolder holder, int pos) {
-        // - get element from your dataset at this position
-        // - replace the contents of the view with that element
         holder.headlineTextView.setText(rssEntries.get(pos).getHeadline());
         if(rssEntries.get(pos).getPhotoURL() == null)
             Picasso.with(context).load(R.drawable.placeholder).fit().centerCrop().into(holder.photoImageView);
         else
             Picasso.with(context).load(rssEntries.get(pos).getPhotoURL()).fit().centerCrop().into(holder.photoImageView);
-        holder.urlTextView.setText(rssEntries.get(pos).getUrl());
         final String url = rssEntries.get(pos).getUrl();
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
