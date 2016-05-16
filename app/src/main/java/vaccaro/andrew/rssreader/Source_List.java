@@ -19,6 +19,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class Source_List extends AppCompatActivity {
@@ -28,7 +29,6 @@ public class Source_List extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_sources);
-
         ListView rssListView = (ListView) findViewById(R.id.listViewRssFeed);
         String[] from = new String[] { "name", "url" };
         int[] to = new int[] { R.id.rssFeedName, R.id.rssFeedUrl };
@@ -55,20 +55,26 @@ public class Source_List extends AppCompatActivity {
                 final String itemId = cursor.getString(cursor.getColumnIndex("_id"));
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(Source_List.this);
-                builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+                builder.setPositiveButton("Edit", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.dismiss();
+                        updateButtonHandler(itemId);
+                    }
+                });
+                builder.setNegativeButton("Delete", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         deleteRSSFeed(itemId);
                         Toast.makeText(Source_List.this, "RSS Feed deleted.",Toast.LENGTH_SHORT).show();
                         onResume();
                     }
                 });
-                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                builder.setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         onResume();
                     }
                 });
-                builder.setTitle("Delete Entry");
-                builder.setMessage("Are you sure you want to delete this feed?");
+                builder.setTitle("Modify Entry");
+                builder.setMessage("What would you like to do to this entry?");
                 AlertDialog dialog = builder.create();
                 dialog.show();
                 return true;
@@ -115,6 +121,13 @@ public class Source_List extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onContentChanged() {
+        super.onContentChanged();
+        View emptyList = findViewById(R.id.empty_rss_list_message);
+        ListView lv = (ListView)findViewById(R.id.listViewRssFeed);
+        lv.setEmptyView(emptyList);
+    }
 
     @Override
     protected void onResume()
@@ -146,6 +159,60 @@ public class Source_List extends AppCompatActivity {
     {
         DatabaseConnection databaseConnector = new DatabaseConnection(this);
         databaseConnector.deleteRSSFeed(Integer.parseInt(id));
+    }
+
+    public void updateRSSFeed(String id, String url, String name){
+        DatabaseConnection databaseConnector = new DatabaseConnection(this);
+        databaseConnector.updateRSSFeed(id, url, name);
+    }
+
+    private String[] getRssFeed(String id){
+        DatabaseConnection databaseConnector = new DatabaseConnection(this);
+        databaseConnector.open();
+        Cursor cursor = databaseConnector.getRSSFeed(id);
+        cursor.moveToNext();
+        String url = cursor.getString(cursor.getColumnIndex("url"));
+        String name = cursor.getString(cursor.getColumnIndex("name"));
+        String[] arr = new String[3];
+        arr[0] = id;
+        arr[1] = url;
+        arr[2] = name;
+        databaseConnector.close();
+        return arr;
+
+    }
+
+    private void updateButtonHandler(String id){
+        final String[] arr = getRssFeed(id);
+        final AlertDialog.Builder addSourcesDialog = new AlertDialog.Builder(this);
+        addSourcesDialog.setView(R.layout.add_source_dialog);
+
+        addSourcesDialog.setPositiveButton("Update", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Dialog thisDialog = (Dialog)dialog;
+                final EditText rssDialogUrl = (EditText)thisDialog.findViewById(R.id.addRssFeedUrl);
+                final EditText rssDialogName = (EditText)thisDialog.findViewById(R.id.addRssTitle);
+                String rssDialogUrlText = rssDialogUrl.getText().toString();
+                String rssDialogNameUrlText = rssDialogName.getText().toString();
+                updateRSSFeed(arr[0], rssDialogUrlText, rssDialogNameUrlText);
+                onResume();
+            }
+        });
+        addSourcesDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        AlertDialog alertDialog = addSourcesDialog.create();
+        TextView tv = (TextView)alertDialog.findViewById(R.id.addRSSTextView);
+        tv.setText("Edit RSS Feed");
+        final EditText rssDialogUrl = (EditText)alertDialog.findViewById(R.id.addRssFeedUrl);
+        rssDialogUrl.setText(arr[1]);
+        final EditText rssDialogName = (EditText)alertDialog.findViewById(R.id.addRssTitle);
+        rssDialogName.setText(arr[2]);
+        alertDialog.show();
     }
 
     private class GetRSSTask extends AsyncTask<Object, Object, Cursor>

@@ -36,6 +36,16 @@ public class DatabaseConnection
             database.close(); // close the database connection
     }
 
+    public void updateRSSFeed(String id, String url, String name){
+        String filter = "_id=" + id;
+        ContentValues newFeed = new ContentValues();
+        newFeed.put("url", url);
+        newFeed.put("name", name);
+        open();
+        database.update("RSSFeeds", newFeed, filter, null);
+        close();
+    }
+
     // inserts a new contact in the database
     public void insertUrl(String url, String name)
     {
@@ -44,7 +54,6 @@ public class DatabaseConnection
         newFeed.put("name", name);
         open();
         database.insert("RSSFeeds", null, newFeed);
-        Log.d("insert Url => ", "here");
         close();
     }
 

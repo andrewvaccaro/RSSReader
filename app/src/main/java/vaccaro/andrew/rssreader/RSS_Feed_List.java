@@ -1,6 +1,7 @@
 package vaccaro.andrew.rssreader;
 
 import android.app.ActionBar;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.AsyncTask;
@@ -14,9 +15,13 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.Window;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 
 public class RSS_Feed_List extends AppCompatActivity {
@@ -24,22 +29,27 @@ public class RSS_Feed_List extends AppCompatActivity {
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
+    private TextView emptyText;
     private String id;
     private String url;
     private ArrayList<RSSEntry> list = new ArrayList<>();
     private DatabaseConnection db;
     private SwipeRefreshLayout srl;
+    ProgressBar spinner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         requestWindowFeature(Window.FEATURE_ACTION_BAR);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rss_list);
+        spinner = (ProgressBar)findViewById(R.id.progressBar);
+        spinner.setVisibility(View.VISIBLE);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         Intent intent = getIntent();
         id = intent.getStringExtra("id");
         srl = (SwipeRefreshLayout)findViewById(R.id.swipeRefreshLayout);
+        srl.setEnabled(true);
         getRssUrlOnLoad(id);
         mRecyclerView = (RecyclerView)findViewById(R.id.rssListRecView);
         mRecyclerView.setHasFixedSize(true);
@@ -118,7 +128,16 @@ public class RSS_Feed_List extends AppCompatActivity {
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
             mAdapter.notifyDataSetChanged();
-            mRecyclerView.setAdapter(mAdapter);
+            emptyText = (TextView)findViewById(R.id.empty_view);
+            if (list.size() == 0) {
+                mRecyclerView.setVisibility(View.GONE);
+                spinner.setVisibility(View.GONE);
+                emptyText.setVisibility(View.VISIBLE);
+                srl.setEnabled(false);
+            } else {
+                mRecyclerView.setAdapter(mAdapter);
+                spinner.setVisibility(View.GONE);
+            }
         }
     }
 
@@ -129,6 +148,7 @@ public class RSS_Feed_List extends AppCompatActivity {
         @Override
         protected Cursor doInBackground(String... params)
         {
+
             databaseConnector.open();
             return databaseConnector.getRSSFeed(params[0]);
         }
@@ -136,6 +156,7 @@ public class RSS_Feed_List extends AppCompatActivity {
         @Override
         protected void onPostExecute(Cursor result)
         {
+
             result.moveToNext();
             url = result.getString(result.getColumnIndex("url"));
             String name = result.getString(result.getColumnIndex("name"));

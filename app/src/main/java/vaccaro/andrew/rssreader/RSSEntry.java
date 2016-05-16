@@ -4,7 +4,6 @@ public class RSSEntry {
     String url;
     String photoURL;
     String headline;
-    String link;
 
     public RSSEntry() {
     }

@@ -18,4 +18,15 @@
         android:layout_margin="10dp"
         />
 
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Use the overflow menu to add some sources."
+        android:id="@+id/empty_rss_list_message"
+        android:layout_gravity="center"
+        android:gravity="center|center_horizontal"
+        android:padding="50dp"
+        />
+
 </RelativeLayout>
