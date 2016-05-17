@@ -6,4 +6,10 @@
         android:titleCondensed="@string/menu_item_add_source"
         android:alphabeticShortcut="e">
     </item>
+    <item android:id="@+id/aboutApp"
+        android:title="About"
+        android:icon="@android:drawable/ic_menu_add"
+        android:titleCondensed="About"
+        android:alphabeticShortcut="a">
+    </item>
 </menu>

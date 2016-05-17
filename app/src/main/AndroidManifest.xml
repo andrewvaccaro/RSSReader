@@ -22,6 +22,9 @@
         <activity android:name=".RSS_Feed_List">
         </activity>
 
+        <activity android:name=".About_Activity">
+        </activity>
+
     </application>
 
 </manifest>

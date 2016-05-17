@@ -125,8 +125,14 @@ public class Source_List extends AppCompatActivity {
                     String rssDialogUrlText = rssDialogUrl.getText().toString();
                     EditText rssDialogName = (EditText)thisDialog.findViewById(R.id.addRssTitle);
                     String rssDialogNameUrlText = rssDialogName.getText().toString();
-                    saveRSSUrl(rssDialogUrlText, rssDialogNameUrlText);
-                    onResume();
+                    if(rssDialogUrlText.equals("")){
+                        Toast.makeText(Source_List.this, "The URL cannot be empty.",Toast.LENGTH_LONG).show();
+                    } else if(rssDialogNameUrlText.equals("")){
+                        Toast.makeText(Source_List.this, "The name cannot be empty.",Toast.LENGTH_LONG).show();
+                    } else {
+                        saveRSSUrl(rssDialogUrlText, rssDialogNameUrlText);
+                        onResume();
+                    }
                 }
             });
             addSourcesDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -137,6 +143,9 @@ public class Source_List extends AppCompatActivity {
             });
             AlertDialog alertDialog = addSourcesDialog.create();
             alertDialog.show();
+        } else if (item.getItemId() == R.id.aboutApp){
+            Intent intent = new Intent(Source_List.this, About_Activity.class);
+            startActivity(intent);
         }
         return super.onOptionsItemSelected(item);
     }
