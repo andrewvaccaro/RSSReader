@@ -18,24 +18,39 @@ public class DatabaseConnection
     private SQLiteDatabase database;
     private DatabaseOpenHelper databaseOpenHelper;
 
+    /**
+     * Creates database helper object
+     * @param context
+     */
     public DatabaseConnection(Context context)
     {
         databaseOpenHelper = new DatabaseOpenHelper(context, DATABASE_NAME, null, 1);
     }
 
-    // open the database connection
+    /**
+     * Opens the database.
+     * @throws SQLException
+     */
     public void open() throws SQLException
     {
         database = databaseOpenHelper.getWritableDatabase();
     }
 
-    // close the database connection
+    /**
+     * Closes database connection.
+     */
     public void close()
     {
         if (database != null)
             database.close(); // close the database connection
     }
 
+    /**
+     * Update the RSS entry.
+     * @param id
+     * @param url
+     * @param name
+     */
     public void updateRSSFeed(String id, String url, String name){
         String filter = "_id=" + id;
         ContentValues newFeed = new ContentValues();
@@ -46,7 +61,11 @@ public class DatabaseConnection
         close();
     }
 
-    // inserts a new contact in the database
+    /**
+     * Inserts a new RSS entry into the database
+     * @param url
+     * @param name
+     */
     public void insertUrl(String url, String name)
     {
         ContentValues newFeed = new ContentValues();
@@ -57,31 +76,29 @@ public class DatabaseConnection
         close();
     }
 
+    /**
+     * Gets all of the RSS Feeds from the database
+     * @return
+     */
     public Cursor getAllRSSFeeds()
     {
         return database.query("RSSFeeds", new String[] {"_id", "url", "name"}, null, null, null, null, "name");
     }
 
-    public ArrayList<String> selectAllRSSFeeds(){
-        String query = "select * from RSSFeeds";
-        database = databaseOpenHelper.getWritableDatabase();
-        Cursor cursor = database.rawQuery(query,null);
-
-        ArrayList<String> urlList = new ArrayList<>();
-        if (cursor.moveToFirst()) {
-            do {
-                urlList.add(cursor.getString(1));
-            } while (cursor.moveToNext());
-        }
-        cursor.close();
-        return urlList;
-    }
-
+    /**
+     * Gets a specific RSS feed
+     * @param id
+     * @return
+     */
     public Cursor getRSSFeed(String id)
     {
         return database.query("RSSFeeds", null, "_id=" + id, null, null, null, null);
     }
 
+    /**
+     * Deletes a specific RSS feed
+     * @param id
+     */
     public void deleteRSSFeed(int id)
     {
         open();
@@ -89,6 +106,9 @@ public class DatabaseConnection
         close();
     }
 
+    /**
+     * Creates the database structure.
+     */
     private class DatabaseOpenHelper extends SQLiteOpenHelper
     {
         // public constructor

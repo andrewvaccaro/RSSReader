@@ -68,6 +68,11 @@ public class RSS_Feed_List extends AppCompatActivity {
         );
     }
 
+    /**
+     * Allows back button in action bar to return to main activity.
+     * @param item
+     * @return
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -80,6 +85,10 @@ public class RSS_Feed_List extends AppCompatActivity {
 
     }
 
+    /**
+     * Gets RSS URL from database on activity load.
+     * @param id
+     */
     public void getRssUrlOnLoad(String id){
         try{
             new GetRSSTask().execute(id);
@@ -88,6 +97,10 @@ public class RSS_Feed_List extends AppCompatActivity {
         }
     }
 
+    /**
+     * Gets RSS items from url on activity load
+     * @param url
+     */
     private void getRssItemsOnLoad(String url){
         try{
             new GetRssFeed().execute(url);
@@ -96,16 +109,26 @@ public class RSS_Feed_List extends AppCompatActivity {
         }
     }
 
+    /**
+     * Swipe to refresh component that grabs rss items from URL.
+     * @param url
+     */
     void refreshItems(String url) {
         getRssItemsOnLoad(url);
         onItemsLoadComplete();
     }
 
+    /**
+     * Cancels swipe refresh after loading complete.
+     */
     void onItemsLoadComplete() {
         srl.setRefreshing(false);
     }
 
 
+    /**
+     * Runs on separate thread to grab RSS items from a URL
+     */
     private class GetRssFeed extends AsyncTask<String, Void, Void> {
         @Override
         protected Void doInBackground(String... params) {
@@ -141,6 +164,9 @@ public class RSS_Feed_List extends AppCompatActivity {
         }
     }
 
+    /**
+     * Runs on separate thread to grab clicked item's ID and return it's url and name.
+     */
     private class GetRSSTask extends AsyncTask<String, Object, Cursor>
     {
         DatabaseConnection databaseConnector = new DatabaseConnection(RSS_Feed_List.this);

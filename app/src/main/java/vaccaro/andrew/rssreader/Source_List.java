@@ -25,9 +25,17 @@ import android.widget.Toast;
 
 import javax.xml.transform.Source;
 
+/**
+ * Main activity allows for insertion/edit/deletion of RSS feeds.
+ */
 public class Source_List extends AppCompatActivity {
     private CursorAdapter rssAdapter;
 
+    /**
+     * Loads data from database into listview and sets onclick listener to open them in RSS_Feed_List.
+     * Also sets longclicklistener to edit or delete a specific feed.
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -85,6 +93,11 @@ public class Source_List extends AppCompatActivity {
         });
     }
 
+    /**
+     * Inflates menu with add source button
+     * @param menu
+     * @return
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
@@ -94,7 +107,11 @@ public class Source_List extends AppCompatActivity {
         return true;
     }
 
-    // handle choice from options menu
+    /**
+     * Handles the onclick of a menu option. Creates dialog to add new source.
+     * @param item
+     * @return
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if(item.getItemId()==R.id.addSource){
@@ -124,6 +141,9 @@ public class Source_List extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * If listview is empty, display generic message.
+     */
     @Override
     public void onContentChanged() {
         super.onContentChanged();
@@ -132,6 +152,9 @@ public class Source_List extends AppCompatActivity {
         lv.setEmptyView(emptyList);
     }
 
+    /**
+     * When activity starts, grab items from database
+     */
     @Override
     protected void onResume()
     {
@@ -139,6 +162,9 @@ public class Source_List extends AppCompatActivity {
         new GetRSSTask().execute((Object[]) null);
     } // end method onResume
 
+    /**
+     * close the database cursor.
+     */
     @Override
     protected void onStop()
     {
@@ -152,23 +178,43 @@ public class Source_List extends AppCompatActivity {
     }
 
 
+    /**
+     * Inserts RSS feed into database
+     * @param url
+     * @param name
+     */
     private void saveRSSUrl(String url, String name)
     {
         DatabaseConnection databaseConnector = new DatabaseConnection(this);
         databaseConnector.insertUrl(url, name);
     }
 
+    /**
+     * Deletes RSS feed from database
+     * @param id
+     */
     private void deleteRSSFeed(String id)
     {
         DatabaseConnection databaseConnector = new DatabaseConnection(this);
         databaseConnector.deleteRSSFeed(Integer.parseInt(id));
     }
 
+    /**
+     * Updates RSS feed in database
+     * @param id
+     * @param url
+     * @param name
+     */
     public void updateRSSFeed(String id, String url, String name){
         DatabaseConnection databaseConnector = new DatabaseConnection(this);
         databaseConnector.updateRSSFeed(id, url, name);
     }
 
+    /**
+     * Gets url and name of database entry from it's ID
+     * @param id
+     * @return String[]
+     */
     private String[] getRssFeed(String id){
         DatabaseConnection databaseConnector = new DatabaseConnection(this);
         databaseConnector.open();
@@ -185,10 +231,13 @@ public class Source_List extends AppCompatActivity {
 
     }
 
+    /**
+     * Creates dialog for editing database entry.
+     * @param id
+     */
     private void updateButtonHandler(String id){
         final String[] arr = getRssFeed(id);
         final AlertDialog.Builder addSourcesDialog = new AlertDialog.Builder(this);
-//        addSourcesDialog.setView(R.layout.add_source_dialog);
 
         addSourcesDialog.setPositiveButton("Update", new DialogInterface.OnClickListener() {
             @Override
@@ -223,6 +272,9 @@ public class Source_List extends AppCompatActivity {
         alertDialog.show();
     }
 
+    /**
+     * Runs on separate thread to load all items from database on startup.
+     */
     private class GetRSSTask extends AsyncTask<Object, Object, Cursor>
     {
         DatabaseConnection databaseConnector = new DatabaseConnection(Source_List.this);

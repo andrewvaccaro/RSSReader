@@ -19,6 +19,9 @@ public class RSSAdapter extends RecyclerView.Adapter<RSSAdapter.ViewHolder> {
     private List<RSSEntry> rssEntries;
     private Context context;
 
+    /**
+     * Sets on click listener for recycler view items and instantiates textview/imageview
+     */
     public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public ImageView photoImageView;
         public TextView headlineTextView;
@@ -35,14 +38,23 @@ public class RSSAdapter extends RecyclerView.Adapter<RSSAdapter.ViewHolder> {
         }
     }
 
-    // Provide a suitable constructor (depends on the kind of dataset)
+    /**
+     * Constructor that takes in a list of the RSS items
+     * @param mRssEntries
+     * @param context
+     */
     public RSSAdapter(List<RSSEntry> mRssEntries, Context context) {
         this.rssEntries = mRssEntries;
         this.context = context;
     }
 
 
-    // Create new views (invoked by the layout manager)
+    /**
+     * Sets view to recycler view.
+     * @param parent
+     * @param viewType
+     * @return
+     */
     @Override
     public RSSAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         // create a new view
@@ -51,7 +63,12 @@ public class RSSAdapter extends RecyclerView.Adapter<RSSAdapter.ViewHolder> {
         return vh;
     }
 
-    // Replace the contents of a view (invoked by the layout manager)
+    /**
+     * Sets the textview and imageview of the recyclerview layout and creates an onclick listener
+     * to open the URL in a browser.
+     * @param holder
+     * @param pos
+     */
     @Override
     public void onBindViewHolder(ViewHolder holder, int pos) {
         holder.headlineTextView.setText(rssEntries.get(pos).getHeadline());
@@ -69,7 +86,9 @@ public class RSSAdapter extends RecyclerView.Adapter<RSSAdapter.ViewHolder> {
         });
     }
 
-    // Return the size of your dataset (invoked by the layout manager)
+    /*
+     * Return size of dataset.
+     */
     @Override
     public int getItemCount() {
         return rssEntries.size();

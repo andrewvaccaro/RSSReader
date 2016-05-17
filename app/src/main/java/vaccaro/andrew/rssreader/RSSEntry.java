@@ -1,5 +1,8 @@
 package vaccaro.andrew.rssreader;
 
+/**
+ * Class for holding RSS item's url, photo, and headline.
+ */
 public class RSSEntry {
     String url;
     String photoURL;
