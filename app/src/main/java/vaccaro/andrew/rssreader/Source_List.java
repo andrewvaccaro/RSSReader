@@ -9,6 +9,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -21,6 +22,8 @@ import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import javax.xml.transform.Source;
 
 public class Source_List extends AppCompatActivity {
     private CursorAdapter rssAdapter;
@@ -55,13 +58,13 @@ public class Source_List extends AppCompatActivity {
                 final String itemId = cursor.getString(cursor.getColumnIndex("_id"));
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(Source_List.this);
-                builder.setPositiveButton("Edit", new DialogInterface.OnClickListener() {
+                builder.setNegativeButton("Edit", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         dialog.dismiss();
                         updateButtonHandler(itemId);
                     }
                 });
-                builder.setNegativeButton("Delete", new DialogInterface.OnClickListener() {
+                builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         deleteRSSFeed(itemId);
                         Toast.makeText(Source_List.this, "RSS Feed deleted.",Toast.LENGTH_SHORT).show();
@@ -185,7 +188,7 @@ public class Source_List extends AppCompatActivity {
     private void updateButtonHandler(String id){
         final String[] arr = getRssFeed(id);
         final AlertDialog.Builder addSourcesDialog = new AlertDialog.Builder(this);
-        addSourcesDialog.setView(R.layout.add_source_dialog);
+//        addSourcesDialog.setView(R.layout.add_source_dialog);
 
         addSourcesDialog.setPositiveButton("Update", new DialogInterface.OnClickListener() {
             @Override
@@ -196,6 +199,7 @@ public class Source_List extends AppCompatActivity {
                 String rssDialogUrlText = rssDialogUrl.getText().toString();
                 String rssDialogNameUrlText = rssDialogName.getText().toString();
                 updateRSSFeed(arr[0], rssDialogUrlText, rssDialogNameUrlText);
+                Toast.makeText(Source_List.this, "The entry was updated.", Toast.LENGTH_LONG);
                 onResume();
             }
         });
@@ -205,12 +209,16 @@ public class Source_List extends AppCompatActivity {
                 dialog.dismiss();
             }
         });
+
+        LayoutInflater inflater = Source_List.this.getLayoutInflater();
+        View mView = inflater.inflate(R.layout.add_source_dialog, null);
+        addSourcesDialog.setView(mView);
         AlertDialog alertDialog = addSourcesDialog.create();
-        TextView tv = (TextView)alertDialog.findViewById(R.id.addRSSTextView);
+        TextView tv = (TextView)mView.findViewById(R.id.addRSSTextView);
         tv.setText("Edit RSS Feed");
-        final EditText rssDialogUrl = (EditText)alertDialog.findViewById(R.id.addRssFeedUrl);
+        final EditText rssDialogUrl = (EditText)mView.findViewById(R.id.addRssFeedUrl);
         rssDialogUrl.setText(arr[1]);
-        final EditText rssDialogName = (EditText)alertDialog.findViewById(R.id.addRssTitle);
+        final EditText rssDialogName = (EditText)mView.findViewById(R.id.addRssTitle);
         rssDialogName.setText(arr[2]);
         alertDialog.show();
     }
