@@ -1,7 +1,7 @@
 # RSSReader
 
-![Alt text](/screenshots/screenshot_main.png?raw=true "Main Activity")
-![Alt text](/screenshots/screenshot_feed.png?raw=true "Feed List")
+<img src="/screenshots/screenshot_main.png" width="400" style="display:inline-block;">
+<img src="/screenshots/screenshot_feed.png" width="400" style="display:inline-block;">
 
 **RSS Reader** is an android application that allows you to enter your own list of RSS feeds and view their content without having to create an account.
 
